@@ -42,6 +42,10 @@ func (c *CommendController) CommendAction()  {
 
 
 	c.Data["commedinfo"] = content
+	c.Data["commend"] = commend
+	c.Data["user"] = user
+	c.Data["ip"] = ip
+
 	c.TplName = "servercommend.html"
 
 
