@@ -3,9 +3,23 @@ package routers
 import (
 	"ServerWeb/controllers"
 	"github.com/astaxie/beego"
+
 )
 
+
+
+
+
 func init() {
+
+
+
+
+
+
+
+
+
     beego.Router("/", &controllers.MainController{}, "*:Index")
 	beego.Router("/login", &controllers.LoginController{}, "get,post:Login")
 	beego.Router("/registration", &controllers.LoginController{}, "get:Registyemian")
@@ -18,3 +32,5 @@ func init() {
 	beego.Router("/admin/serveradd", &controllers.ServerListController{}, "post:AddServer")
 	beego.Router("/admin/serveradd", &controllers.ServerListController{}, "get:AddServer")
 }
+
+

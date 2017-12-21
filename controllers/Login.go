@@ -9,6 +9,7 @@ import (
 
 type LoginController struct {
 	beego.Controller
+
 }
 
 func (c *LoginController) Login()  {
@@ -21,8 +22,11 @@ func (c *LoginController) Login()  {
 	//进行数据库查询验证
 	yes := models.SelectUser(username,password)
 
+
+
 	fmt.Println(username, password)
 	if yes {
+		c.SetSession("yonghu","hello")
 
 		c.Redirect("/admin/index", 302)
 		return

@@ -11,15 +11,31 @@ type ServerListController struct {
 }
 
 func (c *ServerListController) Index()  {
+	a := c.GetSession("yonghu")
 
-	var err error
-    //渲染页面，查询数据库服务器列表
-	c.Data["ServerMach"], err = models.GetServerMach()
-	if err != nil {
-		fmt.Println(err)
+	if a != nil {
+		fmt.Println(a)
+
+		var err error
+		//渲染页面，查询数据库服务器列表
+		c.Data["ServerMach"], err = models.GetServerMach()
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		c.TplName = "serverlist.html"
+
+
+
+		return
 	}
 
-	c.TplName = "serverlist.html"
+	c.Redirect("/login", 302)
+	return
+
+
+
+
 }
 
 func (c *ServerListController) AddServer()  {
