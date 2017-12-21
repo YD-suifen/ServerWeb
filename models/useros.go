@@ -12,6 +12,8 @@ import (
 
 )
 
+
+//登录页面用户表结构
 type User struct {
 	Id int
 	Name string

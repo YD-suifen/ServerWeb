@@ -21,8 +21,11 @@ func RegisterDB()  {
 	//	os.MkdirAll(path.Dir(_DB_NAME), os.ModePerm)
 	//	os.Create(_DB_NAME)
 	//}
+	//注册表模型
 	orm.RegisterModel(new(User),new(Server))
+	//注册数据库驱动
 	orm.RegisterDriver(_SQLITE3_DRIVER, orm.DRMySQL)
+	//注册数据库连接参数
 	orm.RegisterDataBase("default", _SQLITE3_DRIVER,"root:jiange123@/Serverweb?charset=utf8")
 
 }
@@ -40,14 +43,20 @@ func RegisterDB()  {
 //	o.Insert(user)
 //}
 
+//创建页面登录用户表
 func UserRegist(name, pass string) (error, bool) {
+
 	orm.Debug = true
+	//启动自动建表功能
 	orm.RunSyncdb("default",false,true)
+    //创建一个Ormer对象
 	o := orm.NewOrm()
+	//初始化表模型，返回一个指针
 	user := new(User)
 	user.Name = name
 	user.Pwd = pass
 	user.CreateTime = time.Now()
+	//插入数据，
 	_ , err := o.Insert(user)
 	if err != nil {
 
@@ -57,10 +66,14 @@ func UserRegist(name, pass string) (error, bool) {
 
 }
 
+
+//登录页面用户表查询
 func SelectUser(name, pass string) bool {
+	//声明一个user变量类型为数组，里面的值类型为User类型
 	var user []User
 	o := orm.NewOrm()
 	o.Using("default")
+	//Raw查询语句，执行sql，
 	_, err := o.Raw("select name,pwd from user where name=?",name).QueryRows(&user)
 
 	fmt.Println(user)
@@ -83,6 +96,8 @@ func SelectUser(name, pass string) bool {
 	return false
 }
 
+
+//服务器密码查询，根据ip字段执行sql查询
 func SelectServerUserPass(ip string) (pass string, err error)  {
 
 	var user []Server

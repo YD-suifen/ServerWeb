@@ -6,6 +6,7 @@ import (
 	"fmt"
 )
 
+//服务器表结构
 type Server struct {
 	Id int
 	Ip string
@@ -14,6 +15,7 @@ type Server struct {
 	CreateTime time.Time `orm:"index"`
 }
 
+//添加服务器列表
 func AddServerMach(ip, user, pass string) bool {
 
 	orm.Debug = true
@@ -54,6 +56,7 @@ func AddServerMach(ip, user, pass string) bool {
 //}
 
 
+//获取数据库内，服务器表的所有数据，服务器列表
 func GetServerMach() ([]*Server, error)  {
 	o := orm.NewOrm()
 	cates := make([]*Server,0)

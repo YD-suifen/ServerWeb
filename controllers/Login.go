@@ -15,8 +15,10 @@ func (c *LoginController) Login()  {
 
 	//username := c.Input().Get("username")
 	//password := c.Input().Get("password")
+	//获取登录输入信息
 	username := c.GetString("username")
 	password := c.GetString("password")
+	//进行数据库查询验证
 	yes := models.SelectUser(username,password)
 
 	fmt.Println(username, password)
@@ -45,6 +47,7 @@ func (c *LoginController) Regist() {
 	password := c.GetString("password")
 
 	fmt.Println(username, password)
+	//注册用户，插入数据
 	err, shifou := models.UserRegist(username, password)
 	if shifou {
 		c.Redirect("/login", 302)

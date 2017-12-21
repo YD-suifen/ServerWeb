@@ -24,13 +24,14 @@ func (c *CommendController) CommendAction()  {
 	ip := c.GetString("ip")
 	user := c.GetString("user")
 	commend := c.GetString("commend")
-
+    //获取服务器密码
 	pwd, err1 := models.SelectServerUserPass(ip)
 	fmt.Println(ip,user,commend,pwd)
 	if err1 !=nil{
 		fmt.Println(err1)
 		return
 	}
+	//在执行远程ssh命令
 	content, err  := sshcommend.Action(ip, user,pwd,commend)
 	if err != nil {
 		fmt.Println(err)

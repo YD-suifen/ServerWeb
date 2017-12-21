@@ -13,7 +13,7 @@ type ServerListController struct {
 func (c *ServerListController) Index()  {
 
 	var err error
-
+    //渲染页面，查询数据库服务器列表
 	c.Data["ServerMach"], err = models.GetServerMach()
 	if err != nil {
 		fmt.Println(err)
@@ -28,7 +28,7 @@ func (c *ServerListController) AddServer()  {
 	pass := c.GetString("pass")
 
 	if ip != "" && user != "" && pass != "" {
-
+        //添加服务器
 		shi := models.AddServerMach(ip,user,pass)
 		fmt.Println(shi)
 		if shi {
