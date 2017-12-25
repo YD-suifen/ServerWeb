@@ -3,6 +3,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"ServerWeb/usersessionget"
 )
 
 type ServerController struct {
@@ -10,6 +11,12 @@ type ServerController struct {
 }
 
 func (c *ServerController) ServerCMD() {
+	a := usersessionget.UserGet(c.Ctx)
+
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
 
 
 

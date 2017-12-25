@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"ServerWeb/sshcommend"
 
+	"ServerWeb/usersessionget"
 )
 
 type CommendController struct {
@@ -14,11 +15,24 @@ type CommendController struct {
 
 func (c *CommendController) Commend() {
 
+	a := usersessionget.UserGet(c.Ctx)
+
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
+
 
 	c.TplName = "servercommend.html"
 }
 
 func (c *CommendController) CommendAction()  {
+	a := usersessionget.UserGet(c.Ctx)
+
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
 
 
 	ip := c.GetString("ip")

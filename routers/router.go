@@ -22,6 +22,7 @@ func init() {
 
     beego.Router("/", &controllers.MainController{}, "*:Index")
 	beego.Router("/login", &controllers.LoginController{}, "get,post:Login")
+	beego.Router("/logout", &controllers.LoginController{}, "get,post:LogOut")
 	beego.Router("/registration", &controllers.LoginController{}, "get:Registyemian")
 	beego.Router("/regist", &controllers.LoginController{}, "post:Regist")
 	beego.Router("/admin/index", &controllers.MainController{}, "*:Home")

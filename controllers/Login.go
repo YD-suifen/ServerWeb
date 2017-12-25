@@ -22,11 +22,9 @@ func (c *LoginController) Login()  {
 	//进行数据库查询验证
 	yes := models.SelectUser(username,password)
 
-
-
 	fmt.Println(username, password)
 	if yes {
-		c.SetSession("yonghu","hello")
+		c.SetSession("Adminname","hello")
 
 		c.Redirect("/admin/index", 302)
 		return
@@ -62,5 +60,15 @@ func (c *LoginController) Regist() {
 
 	c.TplName = "registration.html"
 	return
+
+}
+
+func (c *LoginController) LogOut()  {
+
+	c.DelSession("Adminname")
+	c.Redirect("/login", 302)
+	return
+
+
 
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"ServerWeb/models"
 	"fmt"
+	"ServerWeb/usersessionget"
 )
 
 type ServerListController struct {
@@ -11,9 +12,11 @@ type ServerListController struct {
 }
 
 func (c *ServerListController) Index()  {
-	a := c.GetSession("yonghu")
+	//a := c.GetSession("yonghu")
 
-	if a != nil {
+	a := usersessionget.UserGet(c.Ctx)
+
+	if a != "" {
 		fmt.Println(a)
 
 		var err error
@@ -34,11 +37,17 @@ func (c *ServerListController) Index()  {
 	return
 
 
-
-
 }
 
 func (c *ServerListController) AddServer()  {
+
+
+	a := usersessionget.UserGet(c.Ctx)
+
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
 	ip := c.GetString("ip")
 	user := c.GetString("user")
 	pass := c.GetString("pass")
