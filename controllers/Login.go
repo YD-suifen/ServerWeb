@@ -67,8 +67,7 @@ func (c *LoginController) LogOut()  {
 
 	c.DelSession("Adminname")
 	c.Redirect("/login", 302)
+	c.ServeJSON()
 	return
-
-
 
 }
