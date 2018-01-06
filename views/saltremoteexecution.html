@@ -42,20 +42,12 @@
                                     </div>
                                     <div class="widget-body am-fr">
 
-                                        <form class="am-form tpl-form-border-form" method="post">
+                                        <form class="am-form tpl-form-border-form" method="POST">
                                             <div class="am-form-group">
                                                 <label for="user-name" class="am-u-sm-12 am-form-label am-text-left">远程对象 <span class="tpl-form-line-small-title">Title</span></label>
                                                 <div class="am-u-sm-12">
-                                                    <input type="text" class="tpl-form-input am-margin-top-xs" placeholder="请输入目标minionIP地址/主机名" name="ip" value={{.ip}}>
+                                                    <input type="text" class="tpl-form-input am-margin-top-xs" placeholder="请输入目标minionIP地址/主机名" name="zhujixinxi" value={{.zhujixinxi}}>
                                                     <small>请输入目标minionIP地址/主机名</small>
-                                                </div>
-                                            </div>
-
-                                            <div class="am-form-group">
-                                                <label for="user-name" class="am-u-sm-12 am-form-label am-text-left">用户名<span class="tpl-form-line-small-title">User</span></label>
-                                                <div class="am-u-sm-12">
-                                                    <input type="text" class="tpl-form-input am-margin-top-xs" placeholder="请输入IP地址" name="user" value={{.user}}>
-                                                    <small>请输入登录用户</small>
                                                 </div>
                                             </div>
 
@@ -70,11 +62,9 @@
                                             </div>
 
                                             <div>
-                                                <button type="submit" class="action2" style="color: #0a246a">执行命令</button>
+                                                <button type="submit" style="color: #0a246a">执行命令</button>
 
                                             </div>
-
-
 
                                             <div class="am-form-group" >
                                                 <label for="user-intro" class="am-u-sm-12 am-form-label  am-text-left">执行结果</label>
@@ -98,20 +88,7 @@
         <script src="../static/assets/js/amazeui.datatables.min.js"></script>
         <script src="../static/assets/js/dataTables.responsive.min.js"></script>
         <script src="../static/assets/js/app.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function(){
-                $(".actiqon2").click(function(){
-                    // alert(888);
-                    $("#user-intro").val(7777);
-                    $.post("test.php", { "func": "getNameAndTime", },
-                            function(data){
-                                alert(data.name); // John
-                                console.log(data.time); //  2pm
-                            }, "json");
-                    // $("p").slideToggle();
-                });
-            });
-        </script>
+
         </body>
 
         </html>

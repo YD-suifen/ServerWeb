@@ -33,6 +33,7 @@ func init() {
 	beego.Router("/admin/serveradd", &controllers.ServerListController{}, "post:AddServer")
 	beego.Router("/admin/serveradd", &controllers.ServerListController{}, "get:AddServer")
 	beego.Router("/admin/saltremoteexecution", &controllers.SaltController{}, "get:Execution")
+	beego.Router("/admin/saltremoteexecution", &controllers.SaltController{}, "post:ExecutionAction")
 }
 
 

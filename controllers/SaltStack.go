@@ -12,7 +12,10 @@ import (
 	"fmt"
 	"bytes"
 	"io/ioutil"
-	"github.com/ghodss/yaml"
+	//"github.com/ghodss/yaml"
+	"ServerWeb/usersessionget"
+	//"github.com/go-ini/ini"
+	"crypto/tls"
 )
 
 type Auth_token struct {
@@ -21,10 +24,10 @@ type Auth_token struct {
 
 type Eauth2 struct {
 	Eauth string `json:"eauth"`
-	Expire string `json:"expire"`
+	Expire float32 `json:"expire"`
 	Perms []string `json:"perms"`
-	Start string `json:"start"`
-	Tocken string `json:"tocken"`
+	Start float32 `json:"start"`
+	Token string `json:"token"`
 	User string `json:"user"`
 }
 
@@ -34,50 +37,64 @@ type Salt_login struct {
 	Eauth  string `json:"eauth"`
 }
 
-func Tokend() string  {
+func Tokend() (string, error)  {
 
 	var requeslogin Salt_login
 
-	saltapi := beego.AppConfig.String("saltloginapi")
-	saltapiname := beego.AppConfig.String("saltapi")
-	saltapipass := beego.AppConfig.String("jiange123")
-	requeslogin.Username = saltapiname
-	requeslogin.Password = saltapipass
+	saltloginapi := "https://61.147.125.29:8889/login"
+
+
+	requeslogin.Username = "saltapi"
+	requeslogin.Password = "jiange123"
 	requeslogin.Eauth = "pam"
 	requesjson, err := json.Marshal(requeslogin)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(requesjson)
+	fmt.Println("zheshitokennnnn", string(requesjson))
 
-	requestjsoninfo, err2 := http.NewRequest("POST", saltapi, bytes.NewReader(requesjson))
+	requestjsoninfo, err2 := http.NewRequest("POST", saltloginapi, bytes.NewReader(requesjson))
 	if err2 != nil {
 		fmt.Println(err2)
 	}
 	requestjsoninfo.Header.Set("Accept", "application/json")
-
 	requestjsoninfo.Header.Set("Content-Type", "application/json")
-	client := http.Client{}
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+
+
+	client := &http.Client{Transport: tr}
 	resp, err3 := client.Do(requestjsoninfo)
+
+	//defer resp.Body.Close()
+	//fmt.Println(resp.StatusCode)
+
+
 	if err3 != nil {
-		fmt.Println(err3)
+		fmt.Println("token huoqu shibai....",err3)
+		return "", err3
 	}
 	body ,err4 := ioutil.ReadAll(resp.Body)
 	var jiange Auth_token
 
 	jsonerr := json.Unmarshal([]byte(body), &jiange)
 	if jsonerr != nil {
-		fmt.Println(jsonerr)
+		fmt.Println("jiexi...", jsonerr)
 	}
 	if err4 != nil {
-		fmt.Println(err4)
+		fmt.Println("duqu ...",err4)
 	}
 	fmt.Println(jiange)
 	var tocken string
 	for _, v := range jiange.Return{
-		tocken = v.Tocken
+		tocken = v.Token
 	}
-	return tocken
+	fmt.Println("huoqude token is :..", tocken)
+	return tocken, nil
 
 }
 
@@ -92,7 +109,7 @@ type CommendRS struct {
 	Return []map[string]string `json:"return"`
 } 
 
-func exec_commend(zhuji string, commend string)  string {
+func Exec_commend(zhuji string, commend string)  CommendRS {
 
 	var action ActionCommend
 	action.Client = "local"
@@ -105,25 +122,32 @@ func exec_commend(zhuji string, commend string)  string {
 		fmt.Println(err)
 	}
 	saltapi := beego.AppConfig.String("saltapi")
-
 	requestjsoninfo, err2 := http.NewRequest("POST", saltapi, bytes.NewReader(actionjson))
 	if err2 != nil {
 		fmt.Println(err2)
 	}
-	tocken := Tokend()
+	tocken, _ := Tokend()
 	requestjsoninfo.Header.Set("X-Auth-Token", tocken)
 	requestjsoninfo.Header.Set("Accept", "application/json")
 
 	requestjsoninfo.Header.Set("Content-Type", "application/json")
-	client := http.Client{}
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	client := &http.Client{Transport: tr}
+
 	resp, err3 := client.Do(requestjsoninfo)
 	if err3 != nil {
+
 		fmt.Println(err3)
 	}
 	body ,err4 := ioutil.ReadAll(resp.Body)
 	var jiange CommendRS
 
-	jsonerr := json.Unmarshal([]byte(body), &CommendRS)
+	jsonerr := json.Unmarshal([]byte(body), &jiange)
 	if jsonerr != nil {
 		fmt.Println(jsonerr)
 	}
@@ -132,17 +156,8 @@ func exec_commend(zhuji string, commend string)  string {
 	}
 	fmt.Println(jiange)
 
-	xml , err8 := yaml.JSONToYAML([]byte(body))
-	if err8 !=nil {
-		fmt.Println(err8)
-	}
-	return string(xml)
+	return jiange
 
-	//for _, v := range jiange.Return {
-	//	if v.(string){
-	//		for
-	//	}
-	//}
 
 }
 
@@ -155,12 +170,52 @@ type SaltController struct {
 
 func (c *SaltController) Execution()  {
 
-	zhujixinxi := c.Input().Get("zhujixinxi")
-	commend := c.Input().Get("commend")
+	a := usersessionget.UserGet(c.Ctx)
 
-	jieguo := exec_commend(zhujixinxi, commend)
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
 
-	c.Data["jieguo"] = jieguo
+
+	c.TplName = "saltremoteexecution.html"
+}
+
+func (c *SaltController) ExecutionAction()  {
+	a := usersessionget.UserGet(c.Ctx)
+
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
+
+
+	zhujixinxi := c.GetString("zhujixinxi")
+	commend := c.GetString("commend")
+	fmt.Println(zhujixinxi,commend)
+
+	jieguo:= Exec_commend(zhujixinxi, commend)
+
+
+	var cache bytes.Buffer
+	for _, i := range jieguo.Return{
+		for key, val := range i {
+			cache.WriteString("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-\n")
+
+			cache.WriteString(fmt.Sprint("主机：\n",key))
+
+			cache.WriteString(val)
+			cache.WriteString("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-\n")
+
+		}
+	}
+	date := cache.String()
+
+	fmt.Println("sdfasdfasdfsadfsdf", date)
+
+	c.Data["zhujixinxi"] = zhujixinxi
+	c.Data["commend"] = commend
+	c.Data["commedinfo"] = date
 
 	c.TplName = "saltremoteexecution.html"
 }
