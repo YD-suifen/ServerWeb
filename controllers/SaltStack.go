@@ -220,7 +220,123 @@ func (c *SaltController) ExecutionAction()  {
 	c.TplName = "saltremoteexecution.html"
 }
 
+type ListKey struct {
+	Return []struct{
+		Tag string `json:"tag"`
+		Data struct{
+			Jid string `json:"jid"`
+			Return struct{
+				Minions_pre []interface{} `json:"minions_pre"`
+				Minions_rejected []interface{} `json:"minions_rejected"`
+				Minions_denied []interface{} `json:"minions_denied"`
+				Local []string `json:"local"`
+				Minions []string `json:"minions"`
+			} `json:"return"`
+			Success bool
+			Stamp string `json:"_stamp"`
+			Tag string `json:"tag"`
+			User string `json:"user"`
+			Fun string `json:"fun"`
 
+		} `json:"data"`
+	} `json:"return"`
+}
+
+
+
+func KeyListAll() []string {
+	var action ActionCommend
+	action.Client = "wheel"
+	action.Tgt = "*"
+	action.Fun = "key.list_all"
+	actionjson, err := json.Marshal(action)
+	if err != nil {
+		fmt.Println(err)
+	}
+	saltapi := beego.AppConfig.String("saltapi")
+	requestjsoninfo, err2 := http.NewRequest("POST", saltapi, bytes.NewReader(actionjson))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	tocken, _ := Tokend()
+	requestjsoninfo.Header.Set("X-Auth-Token", tocken)
+	requestjsoninfo.Header.Set("Accept", "application/json")
+
+	requestjsoninfo.Header.Set("Content-Type", "application/json")
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	client := &http.Client{Transport: tr}
+
+	resp, err3 := client.Do(requestjsoninfo)
+	if err3 != nil {
+
+		fmt.Println(err3)
+	}
+	body ,err4 := ioutil.ReadAll(resp.Body)
+	if err4 != nil {
+		fmt.Println(err4)
+	}
+
+	var jiange ListKey
+
+	jsonerr := json.Unmarshal([]byte(body), &jiange)
+	if jsonerr != nil {
+		fmt.Println(jsonerr)
+	}
+
+	for _, v := range jiange.Return{
+
+		aa := v.Data.Return.Minions
+		return aa
+
+
+	}
+	return nil
+
+}
+
+func (c *SaltController) KeyList() {
+	a := usersessionget.UserGet(c.Ctx)
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
+
+
+	c.TplName = "saltkeylist.html"
+
+}
+
+
+func (c *SaltController) KeyListAllAction()  {
+
+	a := usersessionget.UserGet(c.Ctx)
+
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
+
+	list := KeyListAll()
+	var cache bytes.Buffer
+	for _, i := range list{
+
+		cache.WriteString("Minion-\n")
+
+		cache.WriteString(i)
+
+
+	}
+	date := cache.String()
+	c.Data["keylist"] = date
+
+	c.TplName = "saltkeylist.html"
+
+}
 
 
 
