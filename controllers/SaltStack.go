@@ -329,7 +329,6 @@ func (c *SaltController) KeyListAllAction()  {
 
 		cache.WriteString(i)
 
-
 	}
 	date := cache.String()
 	c.Data["keylist"] = date
