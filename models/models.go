@@ -6,6 +6,7 @@ import (
 	//"github.com/Unknwon/com"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/astaxie/beego"
 
 	"fmt"
 
@@ -14,7 +15,11 @@ import (
 
 const (
 	_SQLITE3_DRIVER = "mysql"
+
+
 )
+
+
 
 func RegisterDB()  {
 	//if !com.IsExist(_DB_NAME){
@@ -22,11 +27,14 @@ func RegisterDB()  {
 	//	os.Create(_DB_NAME)
 	//}
 	//注册表模型
+	MysqlUser := beego.AppConfig.String("mysqluser")
+	MysqlPass := beego.AppConfig.String("mysqlpass")
 	orm.RegisterModel(new(User),new(Server))
 	//注册数据库驱动
 	orm.RegisterDriver(_SQLITE3_DRIVER, orm.DRMySQL)
 	//注册数据库连接参数
-	orm.RegisterDataBase("default", _SQLITE3_DRIVER,"root:jiange123@/Serverweb?charset=utf8")
+	//orm.RegisterDataBase("default", _SQLITE3_DRIVER,"root:jiange123@/Serverweb?charset=utf8")
+	orm.RegisterDataBase("default", _SQLITE3_DRIVER,MysqlUser+":"+MysqlPass+"@/Serverweb?charset=utf8")
 
 }
 
