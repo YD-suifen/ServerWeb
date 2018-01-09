@@ -10,4 +10,9 @@
 	
 	chmod 777 ServerWeb
 	
+	进入数据库，创建 serverweb  库
+	
+	然后
 	./ServerWeb
+	
+	最后 http://localhost:8080
