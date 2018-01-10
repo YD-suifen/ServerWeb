@@ -16,6 +16,7 @@ import (
 	"ServerWeb/usersessionget"
 	//"github.com/go-ini/ini"
 	"crypto/tls"
+	"github.com/pkg/errors"
 )
 
 type Auth_token struct {
@@ -103,6 +104,7 @@ type ActionCommend struct {
 	Tgt string `json:"tgt"`
 	Fun string `json:"fun"`
 	Arg string `json:"arg"`
+	Match string `json:"match"`
 }
 
 type CommendRS struct {
@@ -315,27 +317,153 @@ func (c *SaltController) KeyList() {
 func (c *SaltController) KeyListAllAction()  {
 
 	a := usersessionget.UserGet(c.Ctx)
-
 	if a == ""{
 		c.Redirect("/login", 302)
+		return
+	}
+
+	add := c.GetString("add")
+	if add != "" { //添加逻辑
+		minionkey := c.GetString("minionkey")
+		data, err := KeyAccepted(minionkey)
+
+		if err != nil {
+			c.Data["keylist"] = err
+			c.TplName = "saltkeylist.html"
+			return
+		}
+		fmt.Println("piao;aing------")
+
+		c.Data["keylist"] = data[0]
+
+		c.TplName = "saltkeylist.html"
+
 		return
 	}
 
 	list := KeyListAll()
 	var cache bytes.Buffer
 	for _, i := range list{
-
 		cache.WriteString("Minion-\n")
-
 		cache.WriteString(i)
-
 	}
 	date := cache.String()
 	c.Data["keylist"] = date
-
 	c.TplName = "saltkeylist.html"
 
 }
+
+type KeyAcceptedST struct {
+	Return []struct{
+		Tag string `json:"tag"`
+		Date struct{
+			Jid string `json:"jid"`
+			Return struct{
+				Minions []string `json:"minions"`
+			} `json:"return"`
+			Success bool `json:"success"`
+			Stamp string `json:"_stamp"`
+			Tag string `json:"tag"`
+			User string `json:"user"`
+			Fun string `json:"fun"`
+		} `json:"date"`
+
+	} `json:"return"`
+}
+
+//func (c *SaltController) Accepted()  {
+//
+//	a := usersessionget.UserGet(c.Ctx)
+//
+//	if a == ""{
+//		c.Redirect("/login", 302)
+//		return
+//	}
+//	add := c.GetString("add")
+//	ip := c.GetString("ip")
+//	fmt.Println(add,ip)
+//
+//	//data := KeyAccepted(minionkey)
+//
+//
+//	//c.Data[""]
+//
+//	c.TplName = "saltkeylist.html"
+//
+//
+//
+//
+//}
+
+func KeyAccepted(minionkey string) ([]string, error) {
+
+	var keyjson  ActionCommend
+	keyjson.Fun = "key.accept"
+	keyjson.Client = "wheel"
+	keyjson.Match = minionkey
+
+	keyjson2, err := json.Marshal(keyjson)
+	if err != nil {
+		fmt.Println(err)
+	}
+	saltapi := beego.AppConfig.String("saltapi")
+	requestjsoninfo, err2 := http.NewRequest("POST", saltapi, bytes.NewReader(keyjson2))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	tocken, _ := Tokend()
+	requestjsoninfo.Header.Set("X-Auth-Token", tocken)
+	requestjsoninfo.Header.Set("Accept", "application/json")
+
+	requestjsoninfo.Header.Set("Content-Type", "application/json")
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	client := &http.Client{Transport: tr}
+
+	resp, err3 := client.Do(requestjsoninfo)
+	if err3 != nil {
+
+		fmt.Println(err3)
+	}
+	body ,err4 := ioutil.ReadAll(resp.Body)
+	if err4 != nil {
+		fmt.Println(err4)
+	}
+	var jiange KeyAcceptedST
+
+	err5 := json.Unmarshal([]byte(body), &jiange)
+
+	if err5 != nil {
+		fmt.Println(err5)
+
+	}
+	
+	err98 := errors.New("无法添加此服务器")
+
+	for _, v := range jiange.Return{
+		a := v.Date.Return.Minions
+		if a != nil {
+
+			fmt.Println("shujuwei......2222...",a)
+			fmt.Println()
+			return a, nil
+			
+		}
+		return nil, err98
+	}
+
+
+	fmt.Println("shujuwei......3333...")
+	return nil, nil
+
+}
+
+
+
 
 
 

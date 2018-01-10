@@ -43,6 +43,24 @@
                                     <div class="widget-body am-fr">
 
                                         <form class="am-form tpl-form-border-form" method="POST">
+                                            <div class="am-form-group">
+                                                <label for="user-name" class="am-u-sm-12 am-form-label am-text-left">服务器IP <span class="tpl-form-line-small-title">Title</span></label>
+                                                <div class="am-u-sm-12">
+                                                    <input type="text" class="tpl-form-input am-margin-top-xs" id="user-name" placeholder="请输入IP地址" name="minionkey">
+                                                    <input type="hidden" class="tpl-form-input am-margin-top-xs" value="add"  name="add">
+                                                    <small>请输入目标服务器IP地址</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="am-u-sm-12">
+                                                <div class="am-u-sm-12 am-u-sm-push-12">
+                                                    <button type="submit" class="am-btn am-btn-primary tpl-btn-bg-color-success ">添加</button>
+                                                </div>
+                                            </div>
+
+                                        </form>
+
+                                        <form class="am-form tpl-form-border-form" method="POST">
                                             {{/*<div class="am-form-group">*/}}
                                                 {{/*<label for="user-name" class="am-u-sm-12 am-form-label am-text-left">远程对象 <span class="tpl-form-line-small-title">Title</span></label>*/}}
                                                 {{/*<div class="am-u-sm-12">*/}}
