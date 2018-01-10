@@ -34,15 +34,20 @@ func (c *CommendController) CommendAction()  {
 		return
 	}
 
-
 	ip := c.GetString("ip")
 	user := c.GetString("user")
 	commend := c.GetString("commend")
     //获取服务器密码
 	pwd, err1 := models.SelectServerUserPass(ip)
 	fmt.Println(ip,user,commend,pwd)
-	if err1 !=nil{
+	if err1 != nil{
 		fmt.Println(err1)
+
+		c.Data["commend"] = commend
+		c.Data["user"] = user
+		c.Data["ip"] = ip
+		c.Data["commedinfo"] = "没有此服务器"
+		c.TplName = "servercommend.html"
 		return
 	}
 	//在执行远程ssh命令

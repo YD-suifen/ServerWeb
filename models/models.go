@@ -2,14 +2,12 @@ package models
 
 import (
 	"time"
-	//"path"
-	//"github.com/Unknwon/com"
+
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego"
 
 	"fmt"
-
 )
 
 
@@ -108,30 +106,18 @@ func SelectUser(name, pass string) bool {
 //服务器密码查询，根据ip字段执行sql查询
 func SelectServerUserPass(ip string) (pass string, err error)  {
 
-	var user []Server
-	var password string
+	var user Server
+
 	o := orm.NewOrm()
-	_ , err2 := o.Raw("select pass from server where ip=?", ip).QueryRows(&user)
-	if err2 !=nil{
-		fmt.Println("cuole................",err2)
-		return "", err2
+	err1 := o.Raw("SELECT * FROM server WHERE ip = ?",ip).QueryRow(&user)
+	if err1 == orm.ErrNoRows {
+
+		fmt.Println("meiyou 服务器", err1)
+		return "", err1
 	}
 
-	//user := new(Server)
-	//
-	//qs := o.QueryTable("server")
-	//err2 := qs.Filter("ip", string).One(user)
 
-
-
-	hang := user[0]
-	password = hang.Pass
-	fmt.Println(hang)
-	fmt.Println("minahsi:.......",string(password))
-	return password, err2
-
-
-
+	return user.Pass, nil
 
 
 }
