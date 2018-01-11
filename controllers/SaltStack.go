@@ -42,11 +42,13 @@ func Tokend() (string, error)  {
 
 	var requeslogin Salt_login
 
-	saltloginapi := "https://61.147.125.29:8889/login"
+	//saltloginapi := "https://61.147.125.29:8889/login"
+	saltloginapi := beego.AppConfig.String("saltloginapi")
+	saltapiname := beego.AppConfig.String("saltapiname")
+	saltapipass := beego.AppConfig.String("saltapipass")
 
-
-	requeslogin.Username = "saltapi"
-	requeslogin.Password = "jiange123"
+	requeslogin.Username = saltapiname
+	requeslogin.Password = saltapipass
 	requeslogin.Eauth = "pam"
 	requesjson, err := json.Marshal(requeslogin)
 	if err != nil {
@@ -441,7 +443,7 @@ func KeyAccepted(minionkey string) ([]string, error) {
 		fmt.Println(err5)
 
 	}
-	
+
 	err98 := errors.New("无法添加此服务器")
 
 	for _, v := range jiange.Return{
