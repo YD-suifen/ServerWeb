@@ -17,6 +17,7 @@ import (
 	//"github.com/go-ini/ini"
 	"crypto/tls"
 	"github.com/pkg/errors"
+
 )
 
 type Auth_token struct {
@@ -303,17 +304,21 @@ func KeyListAll() []string {
 
 }
 
-func (c *SaltController) KeyList() {
-	a := usersessionget.UserGet(c.Ctx)
-	if a == ""{
-		c.Redirect("/login", 302)
-		return
-	}
-
-
-	c.TplName = "saltkeylist.html"
-
-}
+//func (c *SaltController) KeyList() {
+//	a := usersessionget.UserGet(c.Ctx)
+//	if a == ""{
+//		c.Redirect("/login", 302)
+//		return
+//	}
+//
+//
+//	list := KeyListAll()
+//
+//	c.Data["keylist"] = list
+//	c.TplName = "saltkeylist.html"
+//	return
+//
+//}
 
 
 func (c *SaltController) KeyListAllAction()  {
@@ -324,41 +329,95 @@ func (c *SaltController) KeyListAllAction()  {
 		return
 	}
 
-	add := c.GetString("add")
-	if add != "" { //添加逻辑
+
+
+	op := c.Input().Get("op")
+	fmt.Println("zhua ququuququu 000", op)
+
+
+	switch op{
+	case "add":
 		minionkey := c.GetString("minionkey")
 		data, err := KeyAccepted(minionkey)
 
-		if err != nil {
-			c.Data["keylist"] = err
-			c.TplName = "saltkeylist.html"
+		fmt.Println("shujuwei 000",data)
+
+		fmt.Println("shujubaocuowei 000", err)
+
+		if err == nil {
+
+			//list := KeyListAll()
+			//
+			//c.Data["keylist"] = list
+			//c.TplName = "saltkeylist.html"
+			//return
+			c.Redirect("/admin/saltkeylist.html",301)
 			return
+
 		}
-		fmt.Println("piao;aing------")
+	case "del":
+		ip := c.Input().Get("ip")
+		what := KeyDeletAction(ip)
 
-		c.Data["keylist"] = data[0]
+		fmt.Println(what)
 
-		c.TplName = "saltkeylist.html"
-
+		c.Redirect("/admin/saltkeylist.html",302)
 		return
+
+
 	}
 
+	//add := c.GetString("op")
+	//if add != "" { //添加逻辑
+	//	minionkey := c.GetString("minionkey")
+	//	data, err := KeyAccepted(minionkey)
+	//
+	//	fmt.Println("shujuwei 000",data)
+	//
+	//	fmt.Println("shujubaocuowei 000", err)
+	//
+	//	if err == nil {
+	//
+	//		list := KeyListAll()
+	//
+	//		c.Data["keylist"] = list
+	//		c.TplName = "saltkeylist.html"
+	//		return
+	//	}
+	//	fmt.Println("piao;aing------")
+	//
+	//	//c.Data["keylist"] = data
+	//
+	//	c.TplName = "saltkeylist.html"
+	//
+	//	return
+	//}
+
+	//list := KeyListAll()
+	//var cache bytes.Buffer
+	//for _, i := range list{
+	//	cache.WriteString("Minion-\n")
+	//	cache.WriteString(i)
+	//}
+	//date := cache.String()
+	//fmt.Println(date)
+	//var aa []string
+	//aa = append(aa, "1.1.1.1")
+	//aa = append(aa, "2.2.2.2")
+	//aa = append(aa, "3.3.3.3")
 	list := KeyListAll()
-	var cache bytes.Buffer
-	for _, i := range list{
-		cache.WriteString("Minion-\n")
-		cache.WriteString(i)
-	}
-	date := cache.String()
-	c.Data["keylist"] = date
+
+	c.Data["keylist"] = list
 	c.TplName = "saltkeylist.html"
+	return
+
 
 }
 
 type KeyAcceptedST struct {
 	Return []struct{
 		Tag string `json:"tag"`
-		Date struct{
+		Data struct{
 			Jid string `json:"jid"`
 			Return struct{
 				Minions []string `json:"minions"`
@@ -368,7 +427,24 @@ type KeyAcceptedST struct {
 			Tag string `json:"tag"`
 			User string `json:"user"`
 			Fun string `json:"fun"`
-		} `json:"date"`
+		} `json:"data"`
+
+	} `json:"return"`
+}
+
+
+type KeyDeletST struct {
+	Return []struct{
+		Tag string `json:"tag"`
+		Data struct{
+			Jid string `json:"jid"`
+			Return struct{} `json:"return"`
+			Success bool `json:"success"`
+			Stamp string `json:"_stamp"`
+			Tag string `json:"tag"`
+			User string `json:"user"`
+			Fun string `json:"fun"`
+		} `json:"data"`
 
 	} `json:"return"`
 }
@@ -444,11 +520,16 @@ func KeyAccepted(minionkey string) ([]string, error) {
 
 	}
 
+
+
 	err98 := errors.New("无法添加此服务器")
 
 	for _, v := range jiange.Return{
-		a := v.Date.Return.Minions
-		if a != nil {
+		a := v.Data.Return.Minions
+		fmt.Println(a)
+
+		fmt.Println(jiange)
+		if s := len(a); s != 0 {
 
 			fmt.Println("shujuwei......2222...",a)
 			fmt.Println()
@@ -461,6 +542,65 @@ func KeyAccepted(minionkey string) ([]string, error) {
 
 	fmt.Println("shujuwei......3333...")
 	return nil, nil
+
+}
+
+func KeyDeletAction(minion string)  bool {
+
+	var keyjson  ActionCommend
+	keyjson.Fun = "key.delete"
+	keyjson.Client = "wheel"
+	keyjson.Match = minion
+
+	keyjson2, err := json.Marshal(keyjson)
+	if err != nil {
+		fmt.Println(err)
+	}
+	saltapi := beego.AppConfig.String("saltapi")
+	requestjsoninfo, err2 := http.NewRequest("POST", saltapi, bytes.NewReader(keyjson2))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	tocken, _ := Tokend()
+	requestjsoninfo.Header.Set("X-Auth-Token", tocken)
+	requestjsoninfo.Header.Set("Accept", "application/json")
+
+	requestjsoninfo.Header.Set("Content-Type", "application/json")
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	client := &http.Client{Transport: tr}
+
+	resp, err3 := client.Do(requestjsoninfo)
+	if err3 != nil {
+
+		fmt.Println(err3)
+	}
+	body ,err4 := ioutil.ReadAll(resp.Body)
+	if err4 != nil {
+		fmt.Println(err4)
+	}
+	var jiange KeyDeletST
+
+	err5 := json.Unmarshal([]byte(body), &jiange)
+
+	if err5 != nil {
+		fmt.Println(err5)
+
+	}
+	for _, v := range jiange.Return{
+
+		a := v.Data.Success
+		if a {
+			return true
+		}
+		return false
+
+	}
+	return false
 
 }
 

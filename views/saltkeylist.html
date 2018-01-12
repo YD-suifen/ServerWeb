@@ -47,7 +47,7 @@
                                                 <label for="user-name" class="am-u-sm-12 am-form-label am-text-left">服务器IP <span class="tpl-form-line-small-title">Title</span></label>
                                                 <div class="am-u-sm-12">
                                                     <input type="text" class="tpl-form-input am-margin-top-xs" id="user-name" placeholder="请输入IP地址" name="minionkey">
-                                                    <input type="hidden" class="tpl-form-input am-margin-top-xs" value="add"  name="add">
+                                                    <input type="hidden" class="tpl-form-input am-margin-top-xs" value="add" name="op">
                                                     <small>请输入目标服务器IP地址</small>
                                                 </div>
                                             </div>
@@ -61,35 +61,60 @@
                                         </form>
 
                                         <form class="am-form tpl-form-border-form" method="POST">
-                                            {{/*<div class="am-form-group">*/}}
-                                                {{/*<label for="user-name" class="am-u-sm-12 am-form-label am-text-left">远程对象 <span class="tpl-form-line-small-title">Title</span></label>*/}}
-                                                {{/*<div class="am-u-sm-12">*/}}
-                                                    {{/*<input type="text" class="tpl-form-input am-margin-top-xs" placeholder="请输入目标minionIP地址/主机名" name="zhujixinxi" value={{.zhujixinxi}}>*/}}
-                                                    {{/*<small>请输入目标minionIP地址/主机名</small>*/}}
-                                                {{/*</div>*/}}
-                                            {{/*</div>*/}}
 
-                                            {{/*<div class="am-form-group">*/}}
-                                                {{/*<label for="user-weibo" class="am-u-sm-12 am-form-label  am-text-left">输入远程命令 <span class="tpl-form-line-small-title">Commend</span></label>*/}}
-                                                {{/*<div class="am-u-sm-12">*/}}
-                                                    {{/*<input type="text" class="am-margin-top-xs" placeholder="请添加分类用点号隔开" name="commend" value={{.commend}}>*/}}
-                                                    {{/*<div>*/}}
 
-                                                    {{/*</div>*/}}
-                                                {{/*</div>*/}}
-                                            {{/*</div>*/}}
+                                                <style type="text/css">
+                                                    .am-u-lg-6 {
+                                                        width: 100%;
+                                                    }
+                                                </style>
 
-                                            <div>
-                                                <button type="submit" style="color: #0a246a">开始监测</button>
+                                                <div class="am-u-sm-12 am-u-md-12 am-u-lg-6">
+                                                    <div class="widget am-cf">
+                                                        <div class="widget-head am-cf">
+                                                            <div class="widget-title am-fl">滚动条表格</div>
+                                                            <div class="widget-function am-fr">
+                                                                <a href="javascript:;" class="am-icon-cog"></a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="widget-body  widget-body-lg am-fr">
+                                                            <div class="am-scrollable-horizontal ">
+                                                                <table width="100%" class="am-table am-table-compact am-text-nowrap tpl-table-black " id="example-r">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th>ip</th>
+                                                                        <th>操作</th>
 
-                                            </div>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    {{ range .keylist}}
+                                                                    <tr class="gradeX">
+                                                                        <td>{{.}}</td>
+                                                                        <td>
+                                                                            <div class="tpl-table-black-operation">
+                                                                                <a href="/admin/saltkeylist.html?op=del&ip={{.}}" class="tpl-table-black-operation-del">
+                                                                                    <i class="am-icon-trash"></i> 删除
+                                                                                </a>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    {{end}}
 
-                                            <div class="am-form-group" >
-                                                <label for="user-intro" class="am-u-sm-12 am-form-label  am-text-left">执行结果</label>
-                                                <div class="am-u-sm-12 am-margin-top-xs">
-                                                    <textarea class="" rows="10" id="user-intro" placeholder="请输入文章内容">{{.keylist}}</textarea>
+
+
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+
+
+
+
+
 
                                         </form>
                                     </div>
