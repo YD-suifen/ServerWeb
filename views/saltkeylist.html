@@ -90,12 +90,20 @@
                                                                     <tbody>
                                                                     {{ range .keylist}}
                                                                     <tr class="gradeX">
-                                                                        <td>{{.}}</td>
+
+                                                                        <td>
+                                                                        {{if .}}{{.}}{{else}}"此服务器异常"{{end}}
+
+                                                                        </td>
                                                                         <td>
                                                                             <div class="tpl-table-black-operation">
+                                                                                {{if .}}
+
                                                                                 <a href="/admin/saltkeylist.html?op=del&ip={{.}}" class="tpl-table-black-operation-del">
                                                                                     <i class="am-icon-trash"></i> 删除
                                                                                 </a>
+                                                                                 {{end}}
+
                                                                             </div>
                                                                         </td>
                                                                     </tr>

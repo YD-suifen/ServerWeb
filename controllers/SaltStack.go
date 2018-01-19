@@ -17,6 +17,7 @@ import (
 	//"github.com/go-ini/ini"
 	"crypto/tls"
 	"github.com/pkg/errors"
+	"time"
 
 )
 
@@ -71,7 +72,10 @@ func Tokend() (string, error)  {
 	}
 
 
-	client := &http.Client{Transport: tr}
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+		Transport: tr,
+		}
 	resp, err3 := client.Do(requestjsoninfo)
 
 	//defer resp.Body.Close()
@@ -142,7 +146,10 @@ func Exec_commend(zhuji string, commend string)  CommendRS {
 			InsecureSkipVerify: true,
 		},
 	}
-	client := &http.Client{Transport: tr}
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+		Transport: tr,
+		}
 
 	resp, err3 := client.Do(requestjsoninfo)
 	if err3 != nil {
@@ -249,7 +256,7 @@ type ListKey struct {
 
 
 
-func KeyListAll() []string {
+func KeyListAll() ([]string, error) {
 	var action ActionCommend
 	action.Client = "wheel"
 	action.Tgt = "*"
@@ -263,23 +270,30 @@ func KeyListAll() []string {
 	if err2 != nil {
 		fmt.Println(err2)
 	}
-	tocken, _ := Tokend()
+	tocken, xinxi := Tokend()
+	if xinxi != nil {
+		return nil, xinxi
+	}
 	requestjsoninfo.Header.Set("X-Auth-Token", tocken)
 	requestjsoninfo.Header.Set("Accept", "application/json")
 
 	requestjsoninfo.Header.Set("Content-Type", "application/json")
 
 	tr := &http.Transport{
+
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},
 	}
-	client := &http.Client{Transport: tr}
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+		Transport: tr,
+		}
 
 	resp, err3 := client.Do(requestjsoninfo)
 	if err3 != nil {
 
-		fmt.Println(err3)
+		fmt.Println("http baocuo ...", err3)
 	}
 	body ,err4 := ioutil.ReadAll(resp.Body)
 	if err4 != nil {
@@ -296,11 +310,11 @@ func KeyListAll() []string {
 	for _, v := range jiange.Return{
 
 		aa := v.Data.Return.Minions
-		return aa
+		return aa, nil
 
 
 	}
-	return nil
+	return nil, nil
 
 }
 
@@ -405,9 +419,18 @@ func (c *SaltController) KeyListAllAction()  {
 	//aa = append(aa, "1.1.1.1")
 	//aa = append(aa, "2.2.2.2")
 	//aa = append(aa, "3.3.3.3")
-	list := KeyListAll()
+	nihao, err := KeyListAll()
+	if err != nil {
+		var list []string
+		list = append(list,"")
 
-	c.Data["keylist"] = list
+		c.Data["keylist"] = list
+		c.TplName = "saltkeylist.html"
+		return
+	}
+
+
+	c.Data["keylist"] = nihao
 	c.TplName = "saltkeylist.html"
 	return
 
@@ -603,6 +626,8 @@ func KeyDeletAction(minion string)  bool {
 	return false
 
 }
+
+
 
 
 

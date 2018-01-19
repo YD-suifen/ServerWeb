@@ -30,11 +30,10 @@ func init() {
 	beego.Router("/admin/servercommend", &controllers.CommendController{}, "get:Commend")
 	beego.Router("/admin/servercommend", &controllers.CommendController{}, "post:CommendAction")
 	beego.Router("/admin/serverlist", &controllers.ServerListController{}, "*:Index")
-	beego.Router("/admin/serveradd", &controllers.ServerListController{}, "post:AddServer")
-	beego.Router("/admin/serveradd", &controllers.ServerListController{}, "get:AddServer")
+	beego.Router("/admin/serveradd", &controllers.ServerListController{}, "post,get:AddServer")
+	//beego.Router("/admin/serveradd", &controllers.ServerListController{}, "get:AddServer")
 	beego.Router("/admin/saltremoteexecution", &controllers.SaltController{}, "get:Execution")
 	beego.Router("/admin/saltremoteexecution", &controllers.SaltController{}, "post:ExecutionAction")
-	//beego.Router("/admin/saltkeylist", &controllers.SaltController{}, "get:KeyList")
 	beego.Router("/admin/saltkeylist", &controllers.SaltController{}, "post,get:KeyListAllAction")
 }
 
