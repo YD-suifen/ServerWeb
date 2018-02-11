@@ -27,7 +27,7 @@ func RegisterDB()  {
 	//注册表模型
 	MysqlUser := beego.AppConfig.String("mysqluser")
 	MysqlPass := beego.AppConfig.String("mysqlpass")
-	orm.RegisterModel(new(User),new(Server))
+	orm.RegisterModel(new(User),new(Server),new(DockerHost))
 	//注册数据库驱动
 	orm.RegisterDriver(_SQLITE3_DRIVER, orm.DRMySQL)
 	//注册数据库连接参数
@@ -36,18 +36,6 @@ func RegisterDB()  {
 
 }
 
-
-//func AdminTable()  {
-//	orm.Debug = true
-//	orm.RunSyncdb("default",false,true)
-//	o := orm.NewOrm()
-//	o.Using("default")
-//	user :=new(User)
-//	user.Name = beego.AppConfig.String("username")
-//	user.CreateTime = time.Now()
-//	user.Pwd = beego.AppConfig.String("password")
-//	o.Insert(user)
-//}
 
 //创建页面登录用户表
 func UserRegist(name, pass string) (error, bool) {

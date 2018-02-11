@@ -118,9 +118,10 @@ type CommendRS struct {
 	Return []map[string]string `json:"return"`
 } 
 
-func Exec_commend(zhuji string, commend string)  CommendRS {
+func Exec_commend(zhuji string, commend string)  (CommendRS , error) {
 
 	var action ActionCommend
+	var jiange CommendRS
 	action.Client = "local"
 	action.Tgt = zhuji
 	action.Fun = "cmd.run"
@@ -135,7 +136,10 @@ func Exec_commend(zhuji string, commend string)  CommendRS {
 	if err2 != nil {
 		fmt.Println(err2)
 	}
-	tocken, _ := Tokend()
+	tocken, err := Tokend()
+	if err != nil {
+		return jiange, err
+	}
 	requestjsoninfo.Header.Set("X-Auth-Token", tocken)
 	requestjsoninfo.Header.Set("Accept", "application/json")
 
@@ -157,7 +161,7 @@ func Exec_commend(zhuji string, commend string)  CommendRS {
 		fmt.Println(err3)
 	}
 	body ,err4 := ioutil.ReadAll(resp.Body)
-	var jiange CommendRS
+
 
 	jsonerr := json.Unmarshal([]byte(body), &jiange)
 	if jsonerr != nil {
@@ -168,7 +172,7 @@ func Exec_commend(zhuji string, commend string)  CommendRS {
 	}
 	fmt.Println(jiange)
 
-	return jiange
+	return jiange, nil
 
 
 }
@@ -206,7 +210,15 @@ func (c *SaltController) ExecutionAction()  {
 	commend := c.GetString("commend")
 	fmt.Println(zhujixinxi,commend)
 
-	jieguo:= Exec_commend(zhujixinxi, commend)
+	jieguo , err := Exec_commend(zhujixinxi, commend)
+	if err != nil {
+
+		c.Data["commedinfo"] = "此服务器异常"
+
+		c.TplName = "saltremoteexecution.html"
+		return
+
+	}
 
 
 	var cache bytes.Buffer

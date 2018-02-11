@@ -35,6 +35,7 @@ func init() {
 	beego.Router("/admin/saltremoteexecution", &controllers.SaltController{}, "get:Execution")
 	beego.Router("/admin/saltremoteexecution", &controllers.SaltController{}, "post:ExecutionAction")
 	beego.Router("/admin/saltkeylist", &controllers.SaltController{}, "post,get:KeyListAllAction")
+	beego.Router("/admin/docker", &controllers.DockerController{}, "post,get:Action")
 }
 
 
