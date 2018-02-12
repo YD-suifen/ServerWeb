@@ -2,7 +2,7 @@ package docker
 
 
 import (
-	"fmt"
+
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -10,26 +10,57 @@ import (
 	"net/http"
 )
 
-func Containers(host string) []string {
+func AllContainers(host string) ([]types.Container, error){
 
 	var cli *http.Client
-	host := "http://133.130.122.48:2378"
+	hosturl := "http://" + host
 	version := "v1.35"
-	ctx, err := client.NewClient(host, version, cli, nil)
+	ctx, err := client.NewClient(hosturl, version, cli, nil)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	containers, err := ctx.ContainerList(context.Background(), types.ContainerListOptions{})
 
 	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	for _, container := range containers {
-		fmt.Println("containers list :",container.ID)
+		return nil, err
 	}
 
 
+	return containers, nil
+
+}
+
+func AllImages(host string) ([]types.ImageSummary, error){
+	var cli *http.Client
+	hosturl := "http://" + host
+	version := "v1.35"
+	ctx, err := client.NewClient(hosturl, version, cli, nil)
+	if err != nil {
+		return nil, err
+	}
+	images, err := ctx.ImageList(context.Background(), types.ImageListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+
+	return images, nil
+}
+
+func AllNetworkMode(host string) ([]types.NetworkResource, error) {
+	var cli *http.Client
+	hosturl := "http://" + host
+	version := "v1.35"
+	ctx, err := client.NewClient(hosturl, version, cli, nil)
+	if err != nil {
+		return nil, err
+	}
+	networkmode, err := ctx.NetworkList(context.Background(), types.NetworkListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+
+	return networkmode, nil
 }

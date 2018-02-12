@@ -4,12 +4,9 @@ import (
 	"github.com/astaxie/beego"
 
 	"fmt"
-	//
 	//"github.com/docker/docker/api/types"
-	//"github.com/docker/docker/client"
-	//"golang.org/x/net/context"
-	//"net/http"
-	//"image/draw"
+
+	"ServerWeb/docker"
 	"ServerWeb/usersessionget"
 	"ServerWeb/models"
 )
@@ -62,9 +59,6 @@ func (c *DockerController) Action()  {
 
 	}
 
-
-
-
 	dockerhost, err := models.GetDockerServer()
 	if err != nil {
 		fmt.Println(err)
@@ -74,7 +68,40 @@ func (c *DockerController) Action()  {
 
 	c.TplName = "docker.html"
 
+}
+
+func (c *DockerController) Containers() {
+
+	a := usersessionget.UserGet(c.Ctx)
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
 
 
+	ip := c.Input().Get("ip")
+	containers, err := docker.AllContainers(ip)
+	if err != nil {
+		return
+	}
+	images, err := docker.AllImages(ip)
+	networkmode, err := docker.AllNetworkMode(ip)
+
+
+
+	c.Data["Container"] = containers
+	c.Data["Image"] = images
+	c.Data["NetworkMode"] = networkmode
+	//for _ , container := range containers{
+	//
+	//	c.Data["ContainerID"] = container.ID
+	//	c.Data["ContainerName"] = container.Names[0]
+	//	c.Data["Image"] = container.Image
+	//	c.Data["Mount"] = container.Mounts
+	//	c.Data["Port"] = container.Ports[0].PrivatePort
+	//	c.Data["Network"] = container.HostConfig.NetworkMode
+	//
+	//}
+	c.TplName = "dockerhostinfo.html"
 
 }
