@@ -27,12 +27,13 @@ func RegisterDB()  {
 	//注册表模型
 	MysqlUser := beego.AppConfig.String("mysqluser")
 	MysqlPass := beego.AppConfig.String("mysqlpass")
+	MysqlHost := beego.AppConfig.String("mysqlhost")
 	orm.RegisterModel(new(User),new(Server),new(DockerHost))
 	//注册数据库驱动
 	orm.RegisterDriver(_SQLITE3_DRIVER, orm.DRMySQL)
 	//注册数据库连接参数
 	//orm.RegisterDataBase("default", _SQLITE3_DRIVER,"root:jiange123@/Serverweb?charset=utf8")
-	orm.RegisterDataBase("default", _SQLITE3_DRIVER,MysqlUser+":"+MysqlPass+"@/Serverweb?charset=utf8")
+	orm.RegisterDataBase("default", _SQLITE3_DRIVER,MysqlUser+":"+MysqlPass+"@tcp(" + MysqlHost + ")/Serverweb?charset=utf8")
 
 }
 

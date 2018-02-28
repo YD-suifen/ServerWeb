@@ -81,27 +81,18 @@ func (c *DockerController) Containers() {
 
 	ip := c.Input().Get("ip")
 	containers, err := docker.AllContainers(ip)
+
+	images, err := docker.AllImages(ip)
+
+	networkmode, err := docker.AllNetworkMode(ip)
+
 	if err != nil {
 		return
 	}
-	images, err := docker.AllImages(ip)
-	networkmode, err := docker.AllNetworkMode(ip)
-
-
 
 	c.Data["Container"] = containers
 	c.Data["Image"] = images
 	c.Data["NetworkMode"] = networkmode
-	//for _ , container := range containers{
-	//
-	//	c.Data["ContainerID"] = container.ID
-	//	c.Data["ContainerName"] = container.Names[0]
-	//	c.Data["Image"] = container.Image
-	//	c.Data["Mount"] = container.Mounts
-	//	c.Data["Port"] = container.Ports[0].PrivatePort
-	//	c.Data["Network"] = container.HostConfig.NetworkMode
-	//
-	//}
 	c.TplName = "dockerhostinfo.html"
 
 }
