@@ -78,8 +78,6 @@ func Tokend() (string, error)  {
 		}
 	resp, err3 := client.Do(requestjsoninfo)
 
-	//defer resp.Body.Close()
-	//fmt.Println(resp.StatusCode)
 
 
 	if err3 != nil {
@@ -330,21 +328,6 @@ func KeyListAll() ([]string, error) {
 
 }
 
-//func (c *SaltController) KeyList() {
-//	a := usersessionget.UserGet(c.Ctx)
-//	if a == ""{
-//		c.Redirect("/login", 302)
-//		return
-//	}
-//
-//
-//	list := KeyListAll()
-//
-//	c.Data["keylist"] = list
-//	c.TplName = "saltkeylist.html"
-//	return
-//
-//}
 
 
 func (c *SaltController) KeyListAllAction()  {
@@ -372,11 +355,6 @@ func (c *SaltController) KeyListAllAction()  {
 
 		if err == nil {
 
-			//list := KeyListAll()
-			//
-			//c.Data["keylist"] = list
-			//c.TplName = "saltkeylist.html"
-			//return
 			c.Redirect("/admin/saltkeylist.html",301)
 			return
 
@@ -393,44 +371,6 @@ func (c *SaltController) KeyListAllAction()  {
 
 	}
 
-	//add := c.GetString("op")
-	//if add != "" { //添加逻辑
-	//	minionkey := c.GetString("minionkey")
-	//	data, err := KeyAccepted(minionkey)
-	//
-	//	fmt.Println("shujuwei 000",data)
-	//
-	//	fmt.Println("shujubaocuowei 000", err)
-	//
-	//	if err == nil {
-	//
-	//		list := KeyListAll()
-	//
-	//		c.Data["keylist"] = list
-	//		c.TplName = "saltkeylist.html"
-	//		return
-	//	}
-	//	fmt.Println("piao;aing------")
-	//
-	//	//c.Data["keylist"] = data
-	//
-	//	c.TplName = "saltkeylist.html"
-	//
-	//	return
-	//}
-
-	//list := KeyListAll()
-	//var cache bytes.Buffer
-	//for _, i := range list{
-	//	cache.WriteString("Minion-\n")
-	//	cache.WriteString(i)
-	//}
-	//date := cache.String()
-	//fmt.Println(date)
-	//var aa []string
-	//aa = append(aa, "1.1.1.1")
-	//aa = append(aa, "2.2.2.2")
-	//aa = append(aa, "3.3.3.3")
 	nihao, err := KeyListAll()
 	if err != nil {
 		var list []string
@@ -484,29 +424,6 @@ type KeyDeletST struct {
 	} `json:"return"`
 }
 
-//func (c *SaltController) Accepted()  {
-//
-//	a := usersessionget.UserGet(c.Ctx)
-//
-//	if a == ""{
-//		c.Redirect("/login", 302)
-//		return
-//	}
-//	add := c.GetString("add")
-//	ip := c.GetString("ip")
-//	fmt.Println(add,ip)
-//
-//	//data := KeyAccepted(minionkey)
-//
-//
-//	//c.Data[""]
-//
-//	c.TplName = "saltkeylist.html"
-//
-//
-//
-//
-//}
 
 func KeyAccepted(minionkey string) ([]string, error) {
 
@@ -639,8 +556,149 @@ func KeyDeletAction(minion string)  bool {
 
 }
 
+type CpfileController struct {
+	beego.Controller
+}
 
 
+type Cprespone struct {
+	Return []map[string]string `json:"return"`
+}
+
+
+//curl -k https://133.130.122.48:8001/ -H "X-Auth-Token: 10f6ebdabb0c10730194eafbb071f05f2ade6638" -H "Accept: application/json" -d client=local -d tgt='163-44-167-92.conoha.io' -d fun='cp.get_file' -d arg='salt://hello2' -d arg='/tmp/hello2'
+
+type CPrequest struct {
+	Client string `json:"client"`
+	Tgt string `json:"tgt"`
+	Fun string `json:"fun"`
+	Arg []string `json:"arg"`
+
+}
+
+
+func Cpfile(host, srfile, drpath string) (Cprespone ,error) {
+
+	var action CPrequest
+	action.Client = "local"
+	action.Tgt = host
+	action.Fun = "cp.get_file"
+	action.Arg = append(action.Arg, "salt://" + srfile)
+	action.Arg = append(action.Arg, drpath)
+	actionjson, err := json.Marshal(action)
+	fmt.Println("json info ......", string(actionjson))
+	if err != nil {
+		fmt.Println(err)
+	}
+	saltapi := beego.AppConfig.String("saltapi")
+	requestjsoninfo, err2 := http.NewRequest("POST", saltapi, bytes.NewReader(actionjson))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	tocken, xinxi := Tokend()
+	if xinxi != nil {
+
+		fmt.Println("cpfile tokenhuoqu shibai")
+		//return nil, xinxi
+	}
+	requestjsoninfo.Header.Set("X-Auth-Token", tocken)
+	requestjsoninfo.Header.Set("Accept", "application/json")
+
+	requestjsoninfo.Header.Set("Content-Type", "application/json")
+
+	tr := &http.Transport{
+
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+		Transport: tr,
+	}
+
+	resp, err3 := client.Do(requestjsoninfo)
+	if err3 != nil {
+
+		fmt.Println("cpfile baocuo ...", err3)
+	}
+	body ,err4 := ioutil.ReadAll(resp.Body)
+	if err4 != nil {
+		fmt.Println("cpfile read error........",err4)
+	}
+	fmt.Println(string(body))
+
+	var jiange Cprespone
+
+	jsonerr := json.Unmarshal([]byte(body), &jiange)
+
+	if jsonerr != nil {
+		fmt.Println(jsonerr)
+	}
+
+	return jiange, nil
+	
+	
+	
+}
+
+func (c *CpfileController) UpDataFile() {
+
+
+	f, h, err := c.GetFile("fileupdata")
+	if err !=nil {
+		fmt.Println("上传出错", err)
+	}
+
+	filename := h.Filename
+	defer f.Close()
+	c.SaveToFile("fileupdata", "D:\\bao\\" + filename)
+
+	c.Data["Drfile"] = "ok"
+	c.TplName = "saltfileCp.html"
+
+}
+
+func (c *CpfileController) CpfileGet() {
+
+
+	c.TplName = "saltfileCp.html"
+}
+
+func (c *CpfileController) CpfileAction() {
+
+	tgt := c.Input().Get("drhostname")
+	sourcefile := c.Input().Get("srfile")
+	tgtpath := c.Input().Get("drpath")
+
+
+	response, err := Cpfile(tgt, sourcefile, tgtpath)
+
+	if err !=nil {
+		fmt.Println("脚本分发失败")
+	}
+	fmt.Println(response.Return)
+
+
+	for _, v := range response.Return {
+
+		var aa []string
+
+		for k, v2 := range v{
+			fmt.Println(k,v2)
+			aa = append(aa, k+","+v2)
+
+		}
+
+		c.Data["Drfile"] = aa
+		c.Data["DRhost"] = tgt
+		c.Data["Sorfile"] = sourcefile
+		c.Data["Drpath"] = tgtpath
+	}
+
+	c.TplName = "saltfileCp.html"
+
+}
 
 
 

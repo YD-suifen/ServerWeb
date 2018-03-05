@@ -1,0 +1,109 @@
+{{template "header"}}
+<!--内容区域-->
+<div class="tpl-content-wrapper">
+
+    <div class="container-fluid am-cf">
+        <div class="row">
+            <div class="am-u-sm-12 am-u-md-12 am-u-lg-9">
+                <div class="page-header-heading"><span class="am-icon-home page-header-heading-icon"></span> 锐派 <small>Replays UI</small></div>
+                <p class="page-header-description">Replays.net 锐派游戏</p>
+            </div>
+            <div class="am-u-lg-3 tpl-index-settings-button">
+                <button type="button" class="page-header-button"><span class="am-icon-paint-brush"></span> 设置</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row-content am-cf">
+
+
+        <div class="row">
+
+            <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+                <div class="widget am-cf">
+                    <div class="widget-head am-cf">
+                        <div class="widget-function am-fr">
+                            <a href="javascript:;" class="am-icon-cog"></a>
+                        </div>
+                    </div>
+                    <div class="widget-body am-fr">
+
+
+                        <div class="row">
+
+                            <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+                                <div class="widget am-cf">
+                                    <div class="widget-head am-cf">
+                                        <div class="widget-title am-fl">SaltStack脚本分发</div>
+                                        <div class="widget-function am-fr">
+                                            <a href="javascript:;" class="am-icon-cog"></a>
+                                        </div>
+                                    </div>
+                                    <div class="widget-body am-fr">
+
+
+                                        <form class="am-form tpl-form-border-form" enctype="multipart/form-data" method="post" action="/admin/updatafile">
+
+                                                <input type="file" name="fileupdata" accept="image/*">
+                                                <input type="submit" class="tpl-form-input am-margin-top-xs">
+
+                                        </form>
+
+
+
+                                        <form class="am-form tpl-form-border-form" method="POST">
+                                            <div class="am-form-group">
+                                                <label for="user-name" class="am-u-sm-12 am-form-label am-text-left">远程对象 <span class="tpl-form-line-small-title">Title</span></label>
+                                                <div class="am-u-sm-12">
+                                                    <input type="text" class="tpl-form-input am-margin-top-xs" placeholder="请输入目标minionIP地址/主机名" name="drhostname" value={{.DRhost}}>
+                                                    <small>请输入目标minionIP地址/主机名</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="am-form-group">
+                                                <label for="user-name" class="am-u-sm-12 am-form-label am-text-left">目标路径 <span class="tpl-form-line-small-title">Title</span></label>
+                                                <div class="am-u-sm-12">
+                                                    <input type="text" class="tpl-form-input am-margin-top-xs" placeholder="请输入目标路径名" name="drpath" value={{.Drpath}}>
+                                                    <small>请输入目标PATH</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="am-form-group">
+                                                <label for="user-weibo" class="am-u-sm-12 am-form-label  am-text-left">srfile <span class="tpl-form-line-small-title">Commend</span></label>
+                                                <div class="am-u-sm-12">
+                                                    <input type="text" class="am-margin-top-xs" placeholder="请添加分类用点号隔开" name="srfile" value={{.Sorfile}}>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <button type="submit" style="color: #0a246a">执行命令</button>
+
+                                            </div>
+
+                                            <div class="am-form-group" >
+                                                <label for="user-intro" class="am-u-sm-12 am-form-label  am-text-left">执行结果</label>
+                                                <div class="am-u-sm-12 am-margin-top-xs">
+                                                    <textarea class="" rows="10" id="user-intro" placeholder="请输入文章内容">{{.Drfile}}</textarea>
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="../static/assets/js/amazeui.min.js"></script>
+        <script src="../static/assets/js/amazeui.datatables.min.js"></script>
+        <script src="../static/assets/js/dataTables.responsive.min.js"></script>
+        <script src="../static/assets/js/app.js"></script>
+
+        </body>
+
+        </html>
