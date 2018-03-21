@@ -9,6 +9,7 @@ import (
 	"ServerWeb/docker"
 	"ServerWeb/usersessionget"
 	"ServerWeb/models"
+	"strings"
 )
 
 type DockerController struct {
@@ -79,7 +80,42 @@ func (c *DockerController) Containers() {
 	}
 
 
+	containerdel := c.Input().Get("op")
+
+	if containerdel != ""  {
+		host := c.Input().Get("ip")
+
+		switch containerdel {
+		case "containerdel":
+			containerid := c.Input().Get("id")
+			what, _ := docker.Containerfalesdelete(host,containerid)
+
+			if what {
+
+				c.Redirect("/admin/dockerhostinfo.html?ip="+host, 301)
+				return
+			}
+		case "imagedel":
+			imagesid := c.Input().Get("id")
+			what := docker.Imagesdelete(host,imagesid)
+			if what {
+				c.Redirect("/admin/dockerhostinfo.html?ip="+host, 302)
+				return
+			}
+		case "networkdel":
+			networkid := c.Input().Get("id")
+			what := docker.NetworkModedelete(host, networkid)
+			if what {
+				c.Redirect("/admin/dockerhostinfo.html?ip="+host, 303)
+			}
+
+		}
+	}
+
+
 	ip := c.Input().Get("ip")
+
+
 	containers, err := docker.AllContainers(ip)
 
 	images, err := docker.AllImages(ip)
@@ -89,10 +125,16 @@ func (c *DockerController) Containers() {
 	if err != nil {
 		return
 	}
+	for _, k := range containers{
+		fmt.Println("zhe shi kong zhiqi hanshu :", k.Container.ID)
+	}
 
-	c.Data["Container"] = containers
-	c.Data["Image"] = images
-	c.Data["NetworkMode"] = networkmode
+
+	strings.Contains("widuu", "wi")
+
+	c.Data["Containers"] = containers
+	c.Data["Images"] = images
+	c.Data["NetworkModes"] = networkmode
 	c.TplName = "dockerhostinfo.html"
 
 }

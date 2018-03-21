@@ -645,6 +645,13 @@ func Cpfile(host, srfile, drpath string) (Cprespone ,error) {
 func (c *CpfileController) UpDataFile() {
 
 
+	a := usersessionget.UserGet(c.Ctx)
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
+
+
 	f, h, err := c.GetFile("fileupdata")
 	if err !=nil {
 		fmt.Println("上传出错", err)
@@ -660,6 +667,11 @@ func (c *CpfileController) UpDataFile() {
 }
 
 func (c *CpfileController) CpfileGet() {
+	a := usersessionget.UserGet(c.Ctx)
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
 
 
 	c.TplName = "saltfileCp.html"
@@ -667,9 +679,16 @@ func (c *CpfileController) CpfileGet() {
 
 func (c *CpfileController) CpfileAction() {
 
-	tgt := c.Input().Get("drhostname")
-	sourcefile := c.Input().Get("srfile")
-	tgtpath := c.Input().Get("drpath")
+	a := usersessionget.UserGet(c.Ctx)
+	if a == ""{
+		c.Redirect("/login", 302)
+		return
+	}
+
+
+	tgt := c.GetString("drhostname")
+	sourcefile := c.GetString("srfile")
+	tgtpath := c.GetString("drpath")
 
 
 	response, err := Cpfile(tgt, sourcefile, tgtpath)

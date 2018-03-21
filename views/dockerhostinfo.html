@@ -1,5 +1,9 @@
 {{template "header"}}
-
+<style>
+table td
+{
+Word-break: break-all;/*必须*/
+}</style>
 <!--内容区域-->
 <div class="tpl-content-wrapper">
 
@@ -61,8 +65,8 @@
 
                                         </form>
 
-                                        <div data-am-widget="tabs"
-                                             class="am-tabs am-tabs-d2">
+
+                                        <div data-am-widget="tabs" class="am-tabs am-tabs-d2">
                                             <ul class="am-tabs-nav am-cf">
                                                 <li class="am-active"><a href="[data-tab-panel-0]">Containers</a></li>
                                                 <li class=""><a href="[data-tab-panel-1]">Images</a></li>
@@ -75,64 +79,65 @@
                                                         <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
                                                             <div class="widget am-cf">
                                                                 <div class="widget-head am-cf">
-                                                                    <div class="widget-title am-fl">Fuck</div>
-                                                                    <div class="widget-function am-fr">
-                                                                        <a href="javascript:;" class="am-icon-cog"></a>
-                                                                    </div>
+                                                                    <div>Fuck</div>
                                                                 </div>
-                                                                <div class="widget-body  widget-body-lg am-fr">
-
-                                                                    <table width="100%" class="am-table am-table-compact am-table-striped tpl-table-black " id="example-r">
+                                                                <div class="am-u-sm-12">
+                                                                    <table width="100%" class="am-table am-table-compact am-table-striped tpl-table-black">
                                                                         <thead>
                                                                         <tr>
-                                                                            <th width="10%">ID</th>
-                                                                            <th width="10%">ContainerName</th>
-                                                                            <th width="10%">ImageName</th>
-                                                                            <th width="10%">Port</th>
-                                                                            <th width="10%">Mount</th>
-                                                                            <th width="10%">Network</th>
-                                                                            <th width="40%">CreateTime</th>
+                                                                            <th style="width: 20%">ID</th>
+                                                                            <th style="width: 10%">ContainerName</th>
+                                                                            <th style="width: 10%">ImageName</th>
+                                                                            <th style="width: 10%">Port</th>
+                                                                            <th style="width: 20%">Mount</th>
+                                                                            <th style="width: 10%">Network</th>
+                                                                            <th style="width: 10%">CreateTime</th>
+
                                                                         </tr>
                                                                         </thead>
-                                                                        <tbody>
-                                                                        {{range .Container}}
+                                                                        <tbody >
+                                                                        {{range .Containers}}
                                                                         <tr class="gradeX">
 
 
-                                                                            <td width="10%">{{.ID}}</td>
-                                                                            <td width="10%">{{.Names}}</td>
-                                                                            <td width="10%">{{.Image}}</td>
-                                                                            <td width="10%">{{.Ports}}</td>
-                                                                            <td width="10%">{{.Mounts}}</td>
-                                                                            <td width="10%">{{.HostConfig.NetworkMode}}</td>
-                                                                            <td width="40%">20180212</td>
+                                                                            <td>{{.Container.ID}}</td>
+                                                                            <td>{{.Names}}</td>
+                                                                            <td>{{.Image}}</td>
+                                                                            <td>{{.Ports}}</td>
+                                                                            <td>{{.Mounts}}</td>
+                                                                            <td>{{.HostConfig.NetworkMode}}</td>
+                                                                            <td>20180212</td>
                                                                             <td>
                                                                                 <div class="tpl-table-black-operation">
                                                                                     <a href="javascript:;">
-                                                                                        <i class="am-icon-pencil"></i> 编辑
+                                                                                        <i class="am-icon-pencil"></i> {{.StatusN}}
                                                                                     </a>
-                                                                                    <a href="javascript:;" class="tpl-table-black-operation-del">
+                                                                                    <a href="javascript:;">
+                                                                                        <i class="am-icon-pencil"></i> 启动
+                                                                                    </a>
+                                                                                    <a href="javascript:;">
+
+                                                                                        <i class="am-icon-pencil"></i> 停止
+                                                                                    </a>
+                                                                                    <a href="javascript:;">
+                                                                                        <i class="am-icon-pencil"></i> 提交
+                                                                                    </a>
+                                                                                    <a href="/admin/dockerhostinfo.html?op=containerdel&ip={{.Ip}}&id={{.Container.ID}}" class="tpl-table-black-operation-del">
+
                                                                                         <i class="am-icon-trash"></i> 删除
                                                                                     </a>
                                                                                 </div>
                                                                             </td>
 
-
-
-
                                                                         </tr>
                                                                         {{end}}
 
-                                                                        <!-- more data -->
                                                                         </tbody>
                                                                     </table>
-
                                                                 </div>
+
                                                             </div>
                                                         </div>
-
-
-
 
                                                     </div>
 
@@ -161,11 +166,11 @@
                                                                         </tr>
                                                                         </thead>
                                                                         <tbody>
-                                                                        {{range .Image}}
+                                                                        {{range .Images}}
                                                                         <tr class="gradeX">
 
 
-                                                                            <td width="10%">{{.ID}}</td>
+                                                                            <td width="10%">{{.ImageSummary.ID}}</td>
                                                                             <td width="10%">{{.RepoTags}}</td>
                                                                             <td width="10%">{{.Size}}</td>
                                                                             <td width="40%">20180212</td>
@@ -174,14 +179,11 @@
                                                                                     <a href="javascript:;">
                                                                                         <i class="am-icon-pencil"></i> 编辑
                                                                                     </a>
-                                                                                    <a href="javascript:;" class="tpl-table-black-operation-del">
+                                                                                    <a href="/admin/dockerhostinfo.html?op=imagedel&ip={{.Ip}}&id={{.ImageSummary.ID}}" class="tpl-table-black-operation-del">
                                                                                         <i class="am-icon-trash"></i> 删除
                                                                                     </a>
                                                                                 </div>
                                                                             </td>
-
-
-
 
                                                                         </tr>
                                                                         {{end}}
@@ -194,11 +196,7 @@
                                                             </div>
                                                         </div>
 
-
-
-
                                                     </div>
-
 
                                                 </div>
                                                 <div data-tab-panel-2 class="am-tab-panel ">
@@ -226,11 +224,9 @@
                                                                         </tr>
                                                                         </thead>
                                                                         <tbody>
-                                                                        {{range .NetworkMode}}
+                                                                        {{range .NetworkModes}}
                                                                         <tr class="gradeX">
-
-
-                                                                            <td width="10%">{{.ID}}</td>
+                                                                            <td width="10%">{{.NetworkResource.ID}}</td>
                                                                             <td width="10%">{{.Name}}</td>
                                                                             <td width="10%">{{.Driver}}</td>
                                                                             <td width="40%">{{.Scope}}</td>
@@ -239,15 +235,11 @@
                                                                                     <a href="javascript:;">
                                                                                         <i class="am-icon-pencil"></i> 编辑
                                                                                     </a>
-                                                                                    <a href="javascript:;" class="tpl-table-black-operation-del">
+                                                                                    <a href="/admin/dockerhostinfo.html?op=imagedel&ip={{.Ip}}&id={{.NetworkResource.ID}}" class="tpl-table-black-operation-del">
                                                                                         <i class="am-icon-trash"></i> 删除
                                                                                     </a>
                                                                                 </div>
                                                                             </td>
-
-
-
-
                                                                         </tr>
                                                                         {{end}}
 
@@ -258,25 +250,15 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
-
-
                                                     </div>
 
                                                 </div>
                                             </div>
                                         </div>
-
-
-
-
-
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>
